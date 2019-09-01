@@ -9,6 +9,8 @@ autopep8 = "*"
 [packages]
 flask = "*"
 flask-restful = "*"
+flask-sqlalchemy = "*"
+flask-jwt-extended = "*"
 
 [requires]
 python_version = "3.7"

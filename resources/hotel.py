@@ -1,87 +1,72 @@
 from flask_restful import Resource, reqparse
 from models.hotel import HotelModel
-#lista de hoteis
-hoteis = [
-    {
-        'hotel_id': 'Alpha',
-        'nome': 'Alpha Hotel',
-        'estrelas': 4.3,
-        'diaria': 420.34,
-        'cidade': 'Rio de Janeiro'
-    },
+from flask_jwt_extended import jwt_required
 
-    {
-        'hotel_id': 'Oscar',
-        'nome': 'Oscar Hotel',
-        'estrelas': 4.4,
-        'diaria': 380.90,
-        'cidade': 'São Paulo'
-    },
-
-    {
-        'hotel_id': 'Floresta',
-        'nome': 'Floresta Hotel',
-        'estrelas': 4.5,
-        'diaria': 510.34,
-        'cidade': 'Porto Alegre'
-    }
-]
 
 class Hoteis(Resource):
 
     def get(self):
-        return {'hoteis': hoteis}
+        return {'hoteis': [hotel.json() for hotel in HotelModel.query.all()]} #SELECT * FROM hoteis
 
 class Hotel(Resource):
 
     argumentos = reqparse.RequestParser()
-    argumentos.add_argument('nome')
+    argumentos.add_argument('nome', type=str, required=True, help="Este campo é obrigatório")
     argumentos.add_argument('estrelas')
     argumentos.add_argument('diaria')
     argumentos.add_argument('cidade')
 
-    def find_hotel(hotel_id):
-        for hotel in hoteis:
-            if hotel['hotel_id'] == hotel_id:
-                return hotel
-        return None
-
     def get(self, hotel_id):
-        hotel = Hotel.find_hotel(hotel_id)
+        hotel = HotelModel.find_hotel(hotel_id)
         if hotel:
-            return hotel
+            return hotel.json()
         
         return {'Message': 'Hotel not found.'}, 404  # not found
 
+    @jwt_required
     def post(self, hotel_id):
         
+        if HotelModel.find_hotel(hotel_id):
+            return {"message":"Hotel id '{}' already exists".format(hotel_id)},400 #erro
+
         dados = Hotel.argumentos.parse_args()
-       
-        hotel_objeto = HotelModel(hotel_id, **dados) 
-        novo_hotel = hotel_objeto.json()
+        hotel = HotelModel(hotel_id, **dados) 
+        
+        try:
+            hotel.save_hotel()
+        except:
+            return{'Message':'Erro ao salvar no banco de dados.'}
+        
+        return hotel.json()
 
-        hoteis.append(novo_hotel)
-        return novo_hotel, 200
-
-
+    @jwt_required
     def put(self, hotel_id):
         
         dados = Hotel.argumentos.parse_args()
-
-        hotel_objeto = HotelModel(hotel_id, **dados)
-        novo_hotel = hotel_objeto.json()
-
-        hotel = Hotel.find_hotel(hotel_id)
-        if hotel:
-            hotel.update(novo_hotel)
-            return novo_hotel, 200 #se foi atualizado um hotel já existente 
-        else:
-            hoteis.append(novo_hotel)
-            return novo_hotel, 201 #se foi criado um novo hotel
-
+        hotel_encontrado = HotelModel.find_hotel(hotel_id)
         
+        if hotel_encontrado:
+            hotel_encontrado.update_hotel(**dados)
+            hotel_encontrado.save_hotel()
+            return hotel_encontrado.json(), 200 #se foi atualizado um hotel já existente 
+        
+        hotel = HotelModel(hotel_id, **dados)
+        
+        try:
+            hotel.save_hotel()
+        except:
+            return{'Message':'Erro ao salvar no banco de dados.'}
+        
+        return hotel.json(), 201 #se foi criado um novo hotel
+
+    @jwt_required
     def delete(self, hotel_id):
-        global hoteis #referenciar lista de hoteis.
-        hoteis = [hotel for hotel in hoteis if hotel['hotel_id'] != hotel_id]
-        return {'message': 'Hotel deleted.'}
+        hotel = HotelModel.find_hotel(hotel_id)
+        if hotel:
+            try:
+                hotel.delete_hotel()
+            except:
+                return {'Message':'Erro ao excluir do banco de dados.'}
+            return {'message': 'Hotel deleted.'}
+        return {'message': 'Hotel not found.'}, 404
 
