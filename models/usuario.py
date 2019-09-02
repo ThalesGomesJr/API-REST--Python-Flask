@@ -1,3 +1,4 @@
+#models do usuario
 from sql_alchemy import banco
 
 class UserModel(banco.Model):
