@@ -1,4 +1,4 @@
 {
     //configurações Json
-    "python.pythonPath": "/home/thalesgomesjr/.local/share/virtualenvs/REST-API---Python-Flask-uIKG3Lnp/bin/python"
+    "python.pythonPath": "/home/thalesgomesjr/anaconda3/bin/python"
 }
