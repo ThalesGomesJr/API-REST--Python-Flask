@@ -1,5 +1,5 @@
 # Curso De RESTful API's em Python-Flask
-Iniciando o projeto do curso de RESTful Web services/ Web APIs/ Webservice REST - com Python e a microframework Flask.
+Projeto do curso de RESTful Web services/ Web APIs/ Webservice REST - com Python e a microframework Flask.
 - Desenvolvedor: Thales Junior de Souza Gomes
 # Melhorias na Atualização versão 1.0.2
 - Inclusão do requirements.txt nos arquivos.
