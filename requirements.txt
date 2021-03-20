@@ -1,16 +1,15 @@
-#requerimentos para utilizar o RESTFUL API
-#para instalar utilize o comando: pip install -r requirements.txt
+-i https://pypi.org/simple/
 aniso8601==7.0.0
-Click==7.0
-Flask==1.1.1
-Flask-JWT-Extended==3.22.0
-Flask-RESTful==0.3.7
-Flask-SQLAlchemy==2.4.0
+click==7.0
+flask-jwt-extended==3.22.0
+flask-restful==0.3.7
+flask-sqlalchemy==2.4.0
+flask==1.1.1
 itsdangerous==1.1.0
-Jinja2==2.10.1
-MarkupSafe==1.1.1
-PyJWT==1.7.1
+jinja2==2.11.3
+markupsafe==1.1.1
+pyjwt==1.7.1
 pytz==2019.2
 six==1.12.0
-SQLAlchemy==1.3.8
-Werkzeug==0.15.5
+sqlalchemy==1.3.8
+werkzeug==0.15.5
